@@ -7,6 +7,56 @@ class LinkedPair:
         self.value = value
         self.next = None
 
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def add_to_head(self, key, value):
+        if self.head == None:
+            self.head = LinkedPair(key, value)
+        else:
+            placeholder = self.head
+            self.head = LinkedPair(key, value)
+            self.head.next = placeholder
+
+    def contains(self, key):
+        if not self.head:
+            return False
+        current = self.head
+        while current:
+            if current.key == key:
+                return True
+            current = current.next
+        return False
+
+    def remove(self, key):
+        if not self.head:
+            print("Error: Key not found")
+        elif self.head.key == key:
+            # Remove head
+            self.head = self.head.next
+        else:
+            parent = self.head
+            current = self.head.next
+            while current:
+                if current.key == key:
+                    # Remove node
+                    parent.next = current.next
+                    return
+                current = current.next
+            print("Error: Key not found")
+
+    def retrieve(self, key):
+        if not self.head:
+            return False
+        current = self.head
+        while current:
+            if current.key == key:
+                return current
+            current = current.next
+        return False
+
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
@@ -54,8 +104,15 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        hashed_key = self._hash_mod(key)
+        
+        if self.storage[hashed_key] is not None:
+            self.storage[hashed_key].add_to_head(key, value)
 
+        else:
+            sll = LinkedList()
+            sll.add_to_head(key, value)
+            self.storage[hashed_key] = sll
 
 
     def remove(self, key):
@@ -66,7 +123,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        hashed_key = self._hash_mod(key)
+
+        if self.storage[hashed_key] is not None:
+            self.storage[hashed_key].remove(key)
+        else:
+            print("Key not found")
 
 
     def retrieve(self, key):
@@ -77,7 +139,15 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        hashed_key = self._hash_mod(key)
+
+        if self.storage[hashed_key] is not None:
+            if self.storage[hashed_key].retrieve(key) is not False:
+                return self.storage[hashed_key].retrieve(key).value
+            else:
+                return None
+        else:
+           return None
 
 
     def resize(self):
@@ -87,8 +157,23 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
 
+        nodes = []
+
+        for i in range(len(self.storage)):
+            if self.storage[i] is not None:
+                parent = self.storage[i].head
+                nodes.append((parent.key, parent.value))
+                current = self.storage[i].head.next
+                while current:
+                    nodes.append((current.key, current.value))
+                    current = current.next
+        
+        self.storage = [None] * self.capacity
+
+        for i in range(len(nodes)):
+            self.insert(nodes[i][0], nodes[i][1])
 
 
 if __name__ == "__main__":
