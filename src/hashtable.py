@@ -141,11 +141,9 @@ class HashTable:
         '''
         hashed_key = self._hash_mod(key)
 
-        if self.storage[hashed_key] is not None:
-            if self.storage[hashed_key].retrieve(key) is not False:
-                return self.storage[hashed_key].retrieve(key).value
-            else:
-                return None
+        if self.storage[hashed_key] is not None and self.\
+            storage[hashed_key].retrieve(key) is not False:
+            return self.storage[hashed_key].retrieve(key).value
         else:
            return None
 
